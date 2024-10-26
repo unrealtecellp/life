@@ -401,8 +401,13 @@ def enternewsentences():
                 audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
                                                                        activeprojectname,
                                                                        audio_id)
+                audio_verified_flag = transcription_audiodetails.get_audio_verified_flag(transcriptions,
+                                                                                         activeprojectname,
+                                                                                         audio_id)
                 if (audio_delete_flag or
-                        audio_id not in speaker_audio_ids):
+                        audio_id not in speaker_audio_ids or
+                        audio_verified_flag == -1
+                    ):
                     latest_audio_id = audiodetails.getnewaudioid(projects,
                                                                  activeprojectname,
                                                                  audio_id,
@@ -414,7 +419,8 @@ def enternewsentences():
                                                      latest_audio_id,
                                                      current_username,
                                                      activespeakerid)
-                    flash(f"Your last active audio seem to be deleted or revoked access by one of the shared user.\
+                    flash(f"Your last active audio seem to be deleted or revoked access by one of the shared user or\
+                              failed in audio validation.\
                         Showing you the next audio in the list.")
                     return redirect(url_for('enternewsentences'))
 
@@ -1127,8 +1133,13 @@ def savetranscription():
         audio_delete_flag = audiodetails.get_audio_delete_flag(transcriptions,
                                                                activeprojectname,
                                                                lastActiveId)
+        audio_verified_flag = transcription_audiodetails.get_audio_verified_flag(transcriptions,
+                                                                                         activeprojectname,
+                                                                                         lastActiveId)
         if (audio_delete_flag or
-                lastActiveId not in speaker_audio_ids):
+                lastActiveId not in speaker_audio_ids or
+                audio_verified_flag == -1
+            ):
             latest_audio_id = audiodetails.getnewaudioid(projects,
                                                          activeprojectname,
                                                          lastActiveId,
@@ -5805,9 +5816,10 @@ def datetimeasid():
 @app.route('/loadpreviousaudio', methods=['GET', 'POST'])
 @login_required
 def loadpreviousaudio():
-    projects, userprojects = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, transcriptions_collection = getdbcollections.getdbcollections(mongo,
                                                                'projects',
-                                                               'userprojects')
+                                                               'userprojects',
+                                                               'transcriptions')
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                                                                   userprojects)
     # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
@@ -5825,6 +5837,9 @@ def loadpreviousaudio():
                                                                    activeprojectname,
                                                                    current_username,
                                                                    activespeakerid)
+        speaker_audio_ids = transcription_audiodetails.exclude_verification_failed_audioids(transcriptions_collection,
+                                                                                                activeprojectname,
+                                                                                                speaker_audio_ids)
         latest_audio_id = audiodetails.getnewaudioid(projects,
                                                      activeprojectname,
                                                      lastActiveId,
@@ -5844,9 +5859,10 @@ def loadpreviousaudio():
 @app.route('/loadnextaudio', methods=['GET', 'POST'])
 @login_required
 def loadnextaudio():
-    projects, userprojects = getdbcollections.getdbcollections(mongo,
+    projects, userprojects, transcriptions_collection = getdbcollections.getdbcollections(mongo,
                                                                'projects',
-                                                               'userprojects')
+                                                               'userprojects',
+                                                               'transcriptions')
     activeprojectname = getactiveprojectname.getactiveprojectname(current_user.username,
                                                                   userprojects)
     # activespeakerid = getactivespeakerid.getactivespeakerid(userprojects, current_user.username)
@@ -5865,6 +5881,11 @@ def loadnextaudio():
                                                                    activeprojectname,
                                                                    current_username,
                                                                    activespeakerid)
+        logger.debug(speaker_audio_ids)
+        speaker_audio_ids = transcription_audiodetails.exclude_verification_failed_audioids(transcriptions_collection,
+                                                                                                activeprojectname,
+                                                                                                speaker_audio_ids)
+        logger.debug(speaker_audio_ids)
         latest_audio_id = audiodetails.getnewaudioid(projects,
                                                      activeprojectname,
                                                      lastActiveId,

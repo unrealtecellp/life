@@ -869,7 +869,7 @@ $("#save").click(function () {
     .done(function (data) {
       // console.log(data.savedTranscription);
       if (!data.savedTranscription) {
-        alert("Unable to save the transcription as audio seem to be deleted or revoked access by one of the shared user. Showing you the next audio in the list.")
+        alert("Unable to save the transcription as audio seem to be deleted or revoked access by one of the shared user or failed in audio validation. Showing you the next audio in the list.")
         window.location.reload();
       }
       else {
@@ -896,7 +896,7 @@ $("#toggleComplete").click(function () {
       let completed = data.status
       console.log('Status returned', completed);
       if (completed == -1) {
-        alert("Unable to update status as audio seem to be deleted or revoked access by one of the shared user. Showing you the next audio in the list.")
+        alert("Unable to update status as audio seem to be deleted or revoked access by one of the shared user or failed in audio validation.\ Showing you the next audio in the list.")
         window.location.reload();
       }
       else {
