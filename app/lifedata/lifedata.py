@@ -47,7 +47,8 @@ from app.lifetagsets.controller import (
 )
 
 from app.lifedata.transcription.controller import (
-    save_new_transcription_form
+    save_new_transcription_form,
+    transcription_report
 )
 
 from app.lifemodels.controller import modelManager
@@ -62,6 +63,7 @@ from datetime import datetime
 from zipfile import ZipFile
 import glob
 import pandas as pd
+import io
 
 from isocodes import script_names as sn
 
@@ -1184,6 +1186,48 @@ def crawlerbrowsechangepage():
                    activePage=page_id,
                    dataType=data_type)
 
+
+def toHHMMSS(secs):
+    sec_num = secs
+    hours = sec_num / 3600
+    minutes = (sec_num / 60) % 60
+    seconds = sec_num % 60
+
+    return "%02d:%02d:%02d" % (hours, minutes, seconds)
+
+@lifedata.route('/crawlingreport', methods=['GET', 'POST'])
+@login_required
+def crawlingreport():
+    userprojects, crawling_collection = getdbcollections.getdbcollections(mongo,
+                                                                                'userprojects',
+                                                                                'crawling')
+    current_username = getcurrentusername.getcurrentusername()
+    activeprojectname = getactiveprojectname.getactiveprojectname(current_username,
+                                                                  userprojects)
+
+    audio_duration_project, doc_count_project = transcription_report.total_audio_duration_project(mongo,
+                                                                                                  crawling_collection,
+                                                                                                  activeprojectname)
+
+    logger.debug(f"audio_duration_project: {audio_duration_project}\ndoc_count_project: {doc_count_project}")
+
+    crawling_report_df = pd.DataFrame(columns=['Project Name',
+                                                    'Audio Duration Project(HH:MM:SS)',
+                                                    'File Count Project'])
+
+    crawling_report_df['Project Name'] = [activeprojectname]
+    crawling_report_df['Audio Duration Project(HH:MM:SS)'] = [toHHMMSS(audio_duration_project)]
+    crawling_report_df['File Count Project'] = [doc_count_project]
+    download_crawling_report_filename = activeprojectname+'_crawling_report.csv'
+    csv_buffer = io.BytesIO()
+    crawling_report_df.to_csv(csv_buffer,
+                                   index=False)
+    csv_buffer.seek(0)
+
+    return send_file(csv_buffer,
+                     mimetype='text/csv',
+                     download_name=download_crawling_report_filename,
+                     as_attachment=True)
 
 @lifedata.route('/getIdList', methods=['GET', 'POST'])
 def getIdList():
