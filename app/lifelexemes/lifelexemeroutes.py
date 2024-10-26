@@ -146,10 +146,26 @@ def dictionaryview():
         # get the list of lexeme entries for current project to show in dictionary view table
         lst = list()
         try:
+            field_list = ['lexemeId',
+              'headword',
+              'Sense.Grammatical Category',
+              'Sense.Gloss.eng',
+              ]
+            all_fields_dict = {}
             # logger.debug(activeprojectname)
             # optionally takes field_list, if provided by the user for showing dictionary entries
             all_fields, lst = lexicondetails.get_all_lexicon_details(
-                lexemes, activeprojectname)
+                lexemes, activeprojectname, field_list)
+            
+            for field in field_list:
+                for a_field in all_fields:
+                    if (field == a_field or
+                        field.split('.')[-1] in a_field):
+                        all_fields_dict[field] = a_field
+                        break
+            logger.debug(all_fields)
+            logger.debug(all_fields_dict)
+
         except:
             logger.exception("")
             flash('Enter first lexeme of the project')
@@ -465,9 +481,11 @@ def lexemeupdate():
 
         # when testing comment these to avoid any database update/changes
         # saving files for the new lexeme to the database in fs collection
-        for (filename, key) in zip(newLexemeFilesName.values(), newLexemeFiles):
-            # logger.debug(filename, key, newLexemeFiles[key])
-            mongo.save_file(filename, newLexemeFiles[key], lexemeId=lexemeId, username=current_user.username,
+        for (filename, key) in zip(newLexemeFilesName.values(), newLexemeFilesName):
+            # logger.debug(filename)
+            # logger.debug(key)
+            # logger.debug(newLexemeFiles[key])
+            mongo.save_file(filename, newLexemeFiles[key], lexemeId=lexemeId, username=projectowner,
                             projectname=lexemeFormData['projectname'], headword=lexemeFormData['headword'],
                             updatedBy=current_user.username)
 

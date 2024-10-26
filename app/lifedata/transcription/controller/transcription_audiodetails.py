@@ -1181,6 +1181,9 @@ def get_audio_doc_details(projectowner,
                           additional_data={},
                           **kwargs):
     # save audio file details in transcriptions collection
+    # logger.debug("additional_data: %s", additional_data)
+    # logger.debug("**kwargs: %s", kwargs)
+    # logger.debug(new_audio_details)
     if sourceId == '':
         sourceId = speakerId
         # lifesourceid = speakerId
@@ -1208,11 +1211,16 @@ def get_audio_doc_details(projectowner,
             }
         }
     for additional_key, additional_value in additional_data:
+        # logger.debug(additional_key)
+        # logger.debug(additional_value)
         new_audio_details[additional_key] = additional_value
 
     for kwargs_key, kwargs_value in kwargs.items():
+        # logger.debug(kwargs_key)
+        # logger.debug(kwargs_value)
         new_audio_details[kwargs_key] = kwargs_value
 
+    # logger.debug(new_audio_details)
     return new_audio_details
 
 

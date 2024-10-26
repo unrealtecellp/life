@@ -335,3 +335,35 @@ $(document).ready(function() {
       return false; 
     });
 });
+
+function createSelect2optgroup(eleId, optionsObject, selectedOption) {
+  // console.log(eleId, optionsObject, selectedOption);
+  let ele = '';
+  for (let [key, value] of Object.entries(optionsObject)) {
+      // console.log(value.length);
+      if (!(value.length === 0)) {
+          let optGroup = key;
+          // let optGroupId = key.toLowerCase().replaceAll(' ', '');
+          let optGroupId = key;
+          ele += '<optgroup id="' + optGroupId + '" label="' + optGroup + '">';
+          for (let i = 0; i < value.length; i++) {
+              option = value[i];
+              if (option === selectedOption) {
+                  ele += '<option value="' + option + '" selected>' + option + '</option>'
+              }
+              else {
+                  ele += '<option value="' + option + '">' + option + '</option>'
+              }
+          }
+          ele += '</optgroup>';
+      }
+  }
+  $('#' + eleId).html(ele);
+  $('#' + eleId).select2({
+      // data: value
+      placeholder: 'Filter Table On',
+      allowClear: true
+  });
+}
+
+createSelect2optgroup('lexicontableheaderdropdown', {}, '');
