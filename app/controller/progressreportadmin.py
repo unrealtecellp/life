@@ -3,7 +3,7 @@ from collections import defaultdict
 import math
 from config import Config
 import datetime
-
+import pandas as pd
 
 
 # MongoDB URI from Config class
@@ -102,7 +102,7 @@ def get_collection_stats(db_name, collection_name):
 #     return total_working_time, f"{hours} hours, {minutes} minutes, {seconds} seconds"
 
 
-import pandas as pd
+
 
 # Function to calculate the difference between two datetime strings
 def calculate_time_diff(start_time, end_time):
