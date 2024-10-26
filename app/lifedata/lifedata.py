@@ -1948,6 +1948,7 @@ def maketranslation():
         if 'bhashini' in translation_source:
             hf_token = ''
             model_name = model_name.replace('bhashini_', '')
+            model_name = model_name[model_name.find('-')+1:]
             model_type = 'bhashini'
         else:
             hf_token = modelManager.get_hf_tokens(

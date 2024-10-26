@@ -715,7 +715,7 @@ def get_textgrid_df(tgt_text_grid):
     csv_textgridIO = StringIO(csv_textgrid)
     # logger.info(csv_textgrid)
     textgrid_pd = pd.read_csv(
-        csv_textgridIO, delimiter='#;;#', error_bad_lines=False)
+        csv_textgridIO, delimiter='#;;#', on_bad_lines='warn')
     return textgrid_pd
 
 
@@ -824,7 +824,7 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0
                             else:
                                 previous_xmax = xmax[-1]
                             logger.debug('Previous without overlap %s',
-                                        previous_without_overlap)
+                                         previous_without_overlap)
                             # previous_no_boundary = previous_xmax - previous_without_overlap
                             if previous_xmax > previous_without_overlap:
                                 logger.debug('Previous max covering overlap')
@@ -835,10 +835,10 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0
                                     'Covered overlap portion in previous %s', previous_covered_overlap)
                                 overlap_remaining_in_previous = slice_overlap - previous_covered_overlap
                                 logger.debug('Free portion in previous %s',
-                                            overlap_remaining_in_previous)
+                                             overlap_remaining_in_previous)
                                 remaining_overlap_for_current = slice_overlap - overlap_remaining_in_previous
                                 logger.debug('Adjusted Overlap %s',
-                                            remaining_overlap_for_current)
+                                             remaining_overlap_for_current)
                                 overlap_covered_in_previous = slice_overlap - previous_covered_overlap
 
                                 slice_overlap = remaining_overlap_for_current
@@ -897,7 +897,8 @@ def get_boundaries_tiers(activeprojectname, projectelements, text_grid, offset=0
                                         if (type(tier_value) is str):
                                             if tier_name in tiers:
                                                 # print (activeprojectname, 'Length of current tier', tier_name, len(tiers[tier_name]))
-                                                tiers[tier_name].append(tier_value)
+                                                tiers[tier_name].append(
+                                                    tier_value)
                                             else:
                                                 tiers[tier_name] = [tier_value]
 

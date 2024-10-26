@@ -150,7 +150,6 @@ def getTranslationModelList():
 
         model_list = []
         if request.method == 'POST':
-            current_model_list = {}
             # added_models = []
             # audio_language = getactiveprojectform.getaudiolanguage(
             # projectsform, projectowner, activeprojectname)
@@ -159,10 +158,15 @@ def getTranslationModelList():
             for audio_language in audio_languages:
                 audio_lang_code = languageManager.get_bcp_language_code(
                     languages, audio_language)
-                for translation_language in translation_languages:
+                for translation_language, translation_script in translation_languages.items():
+                    current_model_list = {}
                     trans_lang = translation_language.split('-')[0]
+
                     trans_lang_code = languageManager.get_bcp_language_code(
                         languages, trans_lang)
+                    if trans_lang == 'Bangla' and translation_script == 'Bengali':
+                        trans_lang_code = 'bn'
+
                     logger.debug('Source lang %s \tTarget Lang %s',
                                  audio_lang_code, trans_lang_code)
                     bhashini_model = bhashiniUtils.get_translation_model(
@@ -170,10 +174,14 @@ def getTranslationModelList():
                     logger.debug('Bhashini Model %s', bhashini_model)
                     if bhashini_model != '':
                         display_model_name = 'bhashini_' + audio_language + \
-                            translation_language+'-'+bhashini_model
+                            trans_lang+'-'+bhashini_model
                         current_model_list['text'] = display_model_name
-                        current_model_list['id'] = 'bhashini_' + bhashini_model
+                        # current_model_list['id'] = 'bhashini_' + bhashini_model
+                        current_model_list['id'] = 'bhashini_' + audio_lang_code + \
+                            trans_lang_code+'-'+bhashini_model
                         model_list.append(current_model_list)
+                        logger.debug('Added %s\t%s to the model list',
+                                     display_model_name, bhashini_model)
             # models = modelManager.get_model_list(
             #     models, languages, featured_authors, language_scripts['language'])
         return jsonify({'models': model_list, 'scripts': language_scripts['scripts'], 'targetLanguages': translation_languages})
