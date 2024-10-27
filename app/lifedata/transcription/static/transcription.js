@@ -97,8 +97,8 @@ function uploadTranscriptionPromptFile(btn) {
 
 function saveTranscriptionPromptText(btn) {
   // console.log(btn, btn.id);
-  promptTextSaveBtnId = btn.id
-  promptTextId = promptTextSaveBtnId.replace(new RegExp('ques|submit', 'g'), '');
+  let promptTextSaveBtnId = btn.id
+  let promptTextId = promptTextSaveBtnId.replace(new RegExp('ques|submit', 'g'), '');
   // console.log(promptTextId);
   const data = document.getElementById(promptTextId).value;
   var formData = new FormData();
@@ -325,6 +325,10 @@ function createTranscriptionInterfaceForm(newData) {
   }
   else {
     audio_lang_script = lang_list[0];
+  }
+  if (!audio_lang_script) {
+    // console.log(audio_lang_script);
+    audio_lang_script = 'English-Latin';
   }
   // let audio_language = newData['Audio Language'][1][0]
   // let audio_script = newData['Transcription'][1][1]
@@ -865,7 +869,7 @@ $("#save").click(function () {
     .done(function (data) {
       // console.log(data.savedTranscription);
       if (!data.savedTranscription) {
-        alert("Unable to save the transcription as audio seem to be deleted or revoked access by one of the shared user. Showing you the next audio in the list.")
+        alert("Unable to save the transcription as audio seem to be deleted or revoked access by one of the shared user or failed in audio validation. Showing you the next audio in the list.")
         window.location.reload();
       }
       else {
@@ -892,7 +896,7 @@ $("#toggleComplete").click(function () {
       let completed = data.status
       console.log('Status returned', completed);
       if (completed == -1) {
-        alert("Unable to update status as audio seem to be deleted or revoked access by one of the shared user. Showing you the next audio in the list.")
+        alert("Unable to update status as audio seem to be deleted or revoked access by one of the shared user or failed in audio validation.\ Showing you the next audio in the list.")
         window.location.reload();
       }
       else {

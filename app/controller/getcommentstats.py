@@ -67,7 +67,11 @@ def getcommentstatsnew(projects_collection,
                                 {
                                     "$match": { "projectname": activeprojectname,
                                                "speakerId": match_key,
-                                                "audiodeleteFLAG": 0 }
+                                                "audiodeleteFLAG": 0,
+                                                "$or": [
+                                                    {"audioverifiedFLAG": 0},
+                                                    {"audioverifiedFLAG": 1},
+                                                ]}
                                 },
                                 {
                                     "$group": { "_id": "$"+groupBy_key,

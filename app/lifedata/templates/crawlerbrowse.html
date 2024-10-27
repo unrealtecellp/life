@@ -26,6 +26,13 @@
           
           <label for="datatypedropdown">Data Type:&nbsp;</label>
           <select id="datatypedropdown" style="width: 30%;"></select>
+          {% if shareinfo['sharemode']|int >= 10 %}
+            <a>
+              <button type="button" id="crawlingreportid" class="btn btn-sm btn-primary crawlingreport" onclick="getCrawlingReport(this)">
+              Crawling Report
+              </button>
+            </a>
+          {% endif %}
       </div>
       <div class="col col-md-3 pull-right" id="browsedatadropdowns">
       </div>

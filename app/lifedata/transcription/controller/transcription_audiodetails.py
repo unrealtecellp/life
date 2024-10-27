@@ -2851,7 +2851,7 @@ def update_text_grid(mongo, text_grid, new_boundaries, transcription_type, inclu
         # else:
         #     boundary_id_end = str(end_boundary).replace('.', '')[:4]
 
-        boundary_id = generate_boundary_id(current_boundary)
+        boundary_id = generate_boundary_id(current_boundary, boundary_offset_value)
         text_grid = generate_new_boundary(mongo, text_grid, start_boundary, end_boundary,
                                           transcription_type, boundary_id)
 
@@ -3246,10 +3246,10 @@ def get_audio_chunk_bytes(audio_file, start_boundary, end_boundary, boundary_id,
     # return write_path
 
 
-def generate_boundary_id(current_boundary):
+def generate_boundary_id(current_boundary, offset_value = 0.0):
     try:
-        start_boundary = round(float(current_boundary['start']), 2)
-        end_boundary = round(float(current_boundary['end']), 2)
+        start_boundary = round(float(current_boundary['start'] - offset_value), 2)
+        end_boundary = round(float(current_boundary['end'] - offset_value), 2)
         boundary_id_start = get_boundary_id_from_number(
             format(start_boundary, '.2f'), 5)
         boundary_id_end = get_boundary_id_from_number(
@@ -3735,6 +3735,16 @@ def get_audio_delete_flag(transcriptions_collection,
 
     return audio_delete_flag
 
+def get_audio_verified_flag(transcriptions_collection,
+                          project_name,
+                          audio_id):
+    audio_verified_flag = transcriptions_collection.find_one({"projectname": project_name,
+                                                            "audioId": audio_id},
+                                                           {"_id": 0,
+                                                            "audioverifiedFLAG": 1})["audioverifiedFLAG"]
+
+    return audio_verified_flag
+
 
 def revoke_deleted_audio(projects_collection,
                          transcriptions_collection,
@@ -3789,7 +3799,11 @@ def get_n_audios(data_collection,
                     "projectname": activeprojectname,
                     # "speakerId": active_speaker_id,
                     "speakerId": {'$in': active_speaker_id},
-                    "audiodeleteFLAG": audio_delete_flag
+                    "audiodeleteFLAG": audio_delete_flag,
+                    "$or": [
+                        {"audioverifiedFLAG": 0},
+                        {"audioverifiedFLAG": 1},
+                    ]
                 }
             },
             {
@@ -3810,7 +3824,6 @@ def get_n_audios(data_collection,
             }
         ])
         # logger.debug("aggregate_output: %s", aggregate_output)
-
         for doc in aggregate_output:
             # logger.debug("aggregate_output: %s", pformat(doc))
             if (doc['audioId'] in speaker_audio_ids):
@@ -3830,27 +3843,29 @@ def get_n_audios(data_collection,
 
                 aggregate_output_list.append(doc)
                 # logger.debug(len(aggregate_output_list))
-
         # logger.debug('aggregate_output_list: %s', pformat(aggregate_output_list))
-        # total_records_aggregate = data_collection.aggregate([
-        #     {
-        #         "$match": {
-        #             "projectname": activeprojectname,
-        #             # "speakerId": active_speaker_id,
-        #             "speakerId": {'$in': active_speaker_id},
-        #             "audiodeleteFLAG": audio_delete_flag
-        #         }
-        #     },
-        #     {
-        #         "$count": "total_records"
-        #     }
-        # ])
-        # for tr in total_records_aggregate:
-        #     # logger.debug(tr)
-        #     if ('total_records' in tr):
-        #         total_records = tr['total_records']
-        # # logger.debug('total_records AUDIO: %s', total_records)
-        total_records = len(speaker_audio_ids)
+        # total_records = len(speaker_audio_ids)
+        total_records_aggregate = data_collection.aggregate([
+            {
+                "$match": {
+                    "projectname": activeprojectname,
+                    "speakerId": {'$in': active_speaker_id},
+                    "audiodeleteFLAG": audio_delete_flag,
+                    "$or": [
+                        {"audioverifiedFLAG": 0},
+                        {"audioverifiedFLAG": 1},
+                    ]
+                }
+            },
+            {
+                "$count": "total_records"
+            }
+        ])
+        for tr in total_records_aggregate:
+            # logger.debug(tr)
+            if ('total_records' in tr):
+                total_records = tr['total_records']
+        # logger.debug('total_records AUDIO: %s', total_records)
     except:
         logger.exception("")
 
@@ -4071,7 +4086,11 @@ def get_audio_sorting_subcategories_derived(transcriptions_collection,
         {
             "$match": {
                 "projectname": activeprojectname,
-                "audiodeleteFLAG": 0
+                "audiodeleteFLAG": 0,
+                "$or": [
+                    {"audioverifiedFLAG": 0},
+                    {"audioverifiedFLAG": 1},
+                ]
             }
         },
         {
@@ -4248,6 +4267,7 @@ def filter_speakers_derived(transcriptions_collection,
                             filter_options,
                             start_from=0,
                             number_of_audios=10,
+                            audio_delete_flag=0,
                             logical_operator="and"):
     '''Get the audioIds and filename based on prompt filter options.'''
     aggregate_output_list = []
@@ -4262,7 +4282,11 @@ def filter_speakers_derived(transcriptions_collection,
         # logger.debug(f"start_from: {start_from}\nnumber_of_audios: {number_of_audios}")
         speakers_match = {
             "projectname": activeprojectname,
-            "audiodeleteFLAG": 0,
+            "audiodeleteFLAG": audio_delete_flag,
+            "$or": [
+                {"audioverifiedFLAG": 0},
+                {"audioverifiedFLAG": 1},
+            ]
             # "speakerId": { "$not": { "$eq": '' } }
         }
         if (len(filtered_speakers_list) != 0):
@@ -4339,6 +4363,7 @@ def filter_speakers_derived(transcriptions_collection,
             if ('total_records' in tr):
                 total_records = tr['total_records']
         # logger.debug('total_records AUDIO: %s', total_records)
+        # logger.debug(pformat(aggregate_output_list))
     except:
         logger.exception("")
 
@@ -4471,3 +4496,16 @@ def get_speaker_metadata(speakerdetails_collection,
         logger.exception("")
 
     return speakers_metadata
+
+def exclude_verification_failed_audioids(transcriptions_collection,
+                                         activeprojectname,
+                                         speaker_audio_ids):
+    exclude_verification_failed_speaker_audio_ids = []
+    for audio_id in speaker_audio_ids:
+        audio_verified_flag = get_audio_verified_flag(transcriptions_collection,
+                                                        activeprojectname,
+                                                        audio_id)
+        if (audio_verified_flag != -1):
+            exclude_verification_failed_speaker_audio_ids.append(audio_id)
+
+    return exclude_verification_failed_speaker_audio_ids

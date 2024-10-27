@@ -1314,6 +1314,20 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
         }
     }
 
+    if ('quesId' in form) {
+        // console.log('quesId');
+        key = "quesId";
+        if (key in sentence[boundaryID]) {
+            eleName = 'quesId'
+            sentence[boundaryID][key] = form[eleName].value;
+            
+        }
+        else {
+            eleName = 'quesId'
+            sentence[boundaryID][key] = form[eleName].value;
+        }
+    }
+
 
     // if ()
 
@@ -1345,8 +1359,10 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
             key === 'translation') {
             for (let [k, v] of Object.entries(sentence[boundaryID][key])) {
                 // console.log(k, v)
-                tk = k.split('-')[1]
+                // tk = k.split('-')[1]
+                tk = k.split('-').join('_');
                 eleName = 'translation_' + tk
+                // console.log(eleName, form[eleName].value);
                 sentence[boundaryID][key][k] = form[eleName].value
             }
         }
@@ -1528,6 +1544,7 @@ function updateSentenceDetailsOnSaveBoundary(boundaryID, sentence, region, form)
 
     // console.log('regions', regions)
     // console.log('updateSentenceDetails(boundaryID, sentence, region, form)', sentence)
+    // console.log(sentence);
 
     return sentence
 }
@@ -1973,8 +1990,14 @@ function createSentenceForm(formElement, boundaryID) {
     let activeTag = getActiveTag();
     createNavTabs(activeprojectform, activeTag);
     let anonymize_checked = false;
+    let boundaryQuesId = false;
+    let selectedBoundaryQuesId = '';
     if('anonymize' in formElement) {
         anonymize_checked = formElement['anonymize'];
+    }
+    if('quesId' in formElement) {
+        boundaryQuesId = true
+        selectedBoundaryQuesId = formElement['quesId'];
     }
     // console.log("activeprojectform", activeprojectform);
     for (let [key, value] of Object.entries(formElement)) {
@@ -2047,9 +2070,15 @@ function createSentenceForm(formElement, boundaryID) {
                 // console.log(allQuesIds);
                 quesIds +='<label for="quesiddropdownboundary">Prompt: </label>' +
                             '<select class="custom-select custom-select-sm" id="quesiddropdownboundary"'+
-                            ' name="quesId" style="width:30%" required>';
+                            ' name="quesId" style="width:30%"'+
+                            ' onchange="autoSavetranscription(event,this)" required>';
                 for (let [quesId, Q_Id] of Object.entries(allQuesIds)) {
-                quesIds += '<option value="' + quesId + '">' + Q_Id + '</option>';
+                    if (quesId === selectedBoundaryQuesId) {
+                        quesIds += '<option value="' + quesId + '" selected>' + Q_Id + '</option>';
+                    }
+                    else {
+                        quesIds += '<option value="' + quesId + '">' + Q_Id + '</option>';
+                    }
                 }
                 quesIds += '</select>';
             }
@@ -2261,7 +2290,9 @@ function createSentenceForm(formElement, boundaryID) {
                     if (translationvalue === '') {
                         translationvalue = translationElicitation(activeprojectform, translang[translangcount])
                     }
-                    translationkey = translationkey.split('-')[1]
+                    // translationkey = translationkey.split('-')[1]
+                    translationkey = translationkey.split('-').join('_');
+                    // console.log(translationkey, translationvalue);
                     // add fieldset
                     // inpt += '<div class="form-group translation collapse in">';
                     // inpt += '<label for="Translation_' + translationkey + '">Translation in ' + translang[translangcount] + '</label>';

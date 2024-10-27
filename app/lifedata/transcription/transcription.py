@@ -71,15 +71,16 @@ audio_data_fields = readJSONFile.readJSONFile(
 @login_required
 def home():
     try:
-        projects, userprojects, projectsform, sentences, transcriptions, speakerdetails, questionnaires, tagsets_collection = getdbcollections.getdbcollections(mongo,
-                                                                                                                                                                'projects',
-                                                                                                                                                                'userprojects',
-                                                                                                                                                                'projectsform',
-                                                                                                                                                                'sentences',
-                                                                                                                                                                'transcriptions',
-                                                                                                                                                                'speakerdetails',
-                                                                                                                                                                'questionnaires',
-                                                                                                                                                                'tagsets')
+        projects, userprojects, projectsform = getdbcollections.getdbcollections(mongo,
+                                                                                    'projects',
+                                                                                    'userprojects',
+                                                                                    'projectsform')
+        transcriptions, speakerdetails, questionnaires = getdbcollections.getdbcollections(mongo,
+                                                                                            'transcriptions',
+                                                                                            'speakerdetails',
+                                                                                            'questionnaires')
+        tagsets_collection = getdbcollections.getdbcollections(mongo,
+                                                                'tagsets')
         current_username = getcurrentusername.getcurrentusername()
         currentuserprojectsname = getcurrentuserprojects.getcurrentuserprojects(current_username,
                                                                                 userprojects)
@@ -96,15 +97,12 @@ def home():
         if (shareinfo["sharemode"] == 0):
             return redirect(url_for('lifedata.transcription.audiobrowse'))
 
-        project_type = getprojecttype.getprojecttype(
-            projects, activeprojectname)
-        data_collection, = getdbcollections.getdbcollections(
-            mongo, project_type)
+        project_type = getprojecttype.getprojecttype(projects, activeprojectname)
+        data_collection, = getdbcollections.getdbcollections(mongo, project_type)
         # logger.debug("data_collection: %s", data_collection)
 
         # if method is not 'POST'
-        projectowner = getprojectowner.getprojectowner(
-            projects, activeprojectname)
+        projectowner = getprojectowner.getprojectowner(projects, activeprojectname)
         activeprojectform = getactiveprojectform.getactiveprojectform(projectsform,
                                                                       projectowner,
                                                                       activeprojectname)
@@ -172,8 +170,7 @@ def home():
                                                                                                             activespeakerid,
                                                                                                             'transcriptionFLAG',
                                                                                                             'audio')
-                commentstats = [total_comments,
-                                annotated_comments, remaining_comments]
+                commentstats = [total_comments, annotated_comments, remaining_comments]
                 # logger.debug("commentstats: %s", commentstats)
                 # logger.debug("total_comments: %s", total_comments)
                 # if (total_comments == 0):
@@ -198,8 +195,13 @@ def home():
                     audio_delete_flag = transcription_audiodetails.get_audio_delete_flag(transcriptions,
                                                                                          activeprojectname,
                                                                                          audio_id)
+                    audio_verified_flag = transcription_audiodetails.get_audio_verified_flag(transcriptions,
+                                                                                         activeprojectname,
+                                                                                         audio_id)
                     if (audio_delete_flag or
-                            audio_id not in speaker_audio_ids):
+                            audio_id not in speaker_audio_ids or
+                            audio_verified_flag == -1
+                        ):
                         # TODO: This will need to be rewritten so that next audio is fetched for current combination
                         latest_audio_id = transcription_audiodetails.getnewaudioid(projects,
                                                                                    activeprojectname,
@@ -214,7 +216,8 @@ def home():
                                                                        latest_audio_id,
                                                                        current_username,
                                                                        activespeakerid)
-                        flash(f"Your last active audio seem to be deleted or revoked access by one of the shared user.\
+                        flash(f"Your last active audio seem to be deleted or revoked access by one of the shared user or\
+                              failed in audio validation.\
                             Showing you the next audio in the list.")
                         return redirect(url_for('lifedata.transcription.home'))
 
@@ -623,7 +626,8 @@ def filteraudiobrowsetable():
             temp_audio_data_list.extend(temp_audio_data_list_partial)
             # logger.debug("temp_audio_data_list count: %s", len(temp_audio_data_list))
             total_records += temp_total_records
-
+        # logger.debug(total_records)
+        # logger.debug(pformat(temp_audio_data_list))
         derived_from_project_type, derived_from_project_name = getprojecttype.getderivedfromprojectdetails(projects,
                                                                                                            activeprojectname)
         if (derived_from_project_type != '' and
@@ -636,7 +640,8 @@ def filteraudiobrowsetable():
                                                                                                                               used_filter_options,
                                                                                                                               filter_options=filter_options,
                                                                                                                               start_from=start_from,
-                                                                                                                              number_of_audios=number_of_audios,)
+                                                                                                                              number_of_audios=number_of_audios,
+                                                                                                                              audio_delete_flag=audio_browse_action)
                 if (len(temp_audio_data_list_derived) != 0):
                     temp_audio_data_list = []
                     total_records = temp_total_records_derived
@@ -1861,8 +1866,13 @@ def toggleComplete():
                                                                activeprojectname,
                                                                lastActiveId)
 
+        audio_verified_flag = transcription_audiodetails.get_audio_verified_flag(transcriptions,
+                                                                                         activeprojectname,
+                                                                                         lastActiveId)
         if (audio_delete_flag or
-                lastActiveId not in speaker_audio_ids):
+                lastActiveId not in speaker_audio_ids or
+                audio_verified_flag == -1
+            ):
             latest_audio_id = audiodetails.getnewaudioid(projects,
                                                          activeprojectname,
                                                          lastActiveId,
